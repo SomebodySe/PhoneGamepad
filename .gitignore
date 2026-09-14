@@ -1,0 +1,7 @@
+# Visual Studio
+.vs/
+obj/
+
+# PhoneGamepadReceiver
+PhoneGamepadReceiver/.vs/
+PhoneGamepadReceiver/PhoneGam.cf15ec6b/
