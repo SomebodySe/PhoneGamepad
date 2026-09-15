@@ -1,5 +1,4 @@
 ﻿<?xml version="1.0" encoding="utf-8" ?>
-
 <ContentPage
     xmlns="http://schemas.microsoft.com/dotnet/2021/maui"
     xmlns:x="http://schemas.microsoft.com/winfx/2009/xaml"
@@ -8,17 +7,11 @@
 
     <!-- ContentPage 只有这一个根 Content -->
     <Grid Padding="10">
-
-        <!-- ===================================================== -->
         <!-- 手柄区域：占满整个页面 -->
-        <!-- ===================================================== -->
-
         <AbsoluteLayout x:Name="GamepadLayout"
-                InputTransparent="False">
+                        InputTransparent="False">
 
-            <!-- ================================================= -->
-            <!-- LT -->
-            <!-- ================================================= -->
+            <!-- TouchBackground：负责接收空白区域的第一根手指 -->
             <Button
                 x:Name="TouchBackground"
                 Text=""
@@ -30,8 +23,8 @@
                 AbsoluteLayout.LayoutBounds="0,0,1,1"
                 AbsoluteLayout.LayoutFlags="All"
                 ZIndex="-1000" />
-            
-            
+
+            <!-- LT -->
             <Button
                 x:Name="LTButton"
                 AutomationId="LTButton"
@@ -44,10 +37,7 @@
                 AbsoluteLayout.LayoutBounds="0.08,0.08,70,45"
                 AbsoluteLayout.LayoutFlags="PositionProportional" />
 
-            <!-- ================================================= -->
             <!-- LB -->
-            <!-- ================================================= -->
-
             <Button
                 x:Name="LBButton"
                 AutomationId="LBButton"
@@ -60,10 +50,7 @@
                 AbsoluteLayout.LayoutBounds="0.08,0.19,70,45"
                 AbsoluteLayout.LayoutFlags="PositionProportional" />
 
-            <!-- ================================================= -->
             <!-- 左摇杆 -->
-            <!-- ================================================= -->
-
             <Grid
                 x:Name="LeftJoystick"
                 AutomationId="LeftJoystick"
@@ -71,7 +58,6 @@
                 HeightRequest="190"
                 AbsoluteLayout.LayoutBounds="0.13,0.62,190,190"
                 AbsoluteLayout.LayoutFlags="PositionProportional">
-
                 <Border
                     x:Name="JoystickBase"
                     WidthRequest="160"
@@ -79,13 +65,10 @@
                     StrokeThickness="3"
                     HorizontalOptions="Center"
                     VerticalOptions="Center">
-
                     <Border.StrokeShape>
                         <RoundRectangle CornerRadius="80" />
                     </Border.StrokeShape>
-
                 </Border>
-
                 <Ellipse
                     x:Name="JoystickKnob"
                     WidthRequest="55"
@@ -93,23 +76,14 @@
                     BackgroundColor="Gray"
                     HorizontalOptions="Center"
                     VerticalOptions="Center" />
-
-                <BoxView
-                    BackgroundColor="Transparent">
-
+                <BoxView BackgroundColor="Transparent">
                     <BoxView.GestureRecognizers>
-                        <PanGestureRecognizer
-                            PanUpdated="Joystick_PanUpdated" />
+                        <PanGestureRecognizer PanUpdated="Joystick_PanUpdated" />
                     </BoxView.GestureRecognizers>
-
                 </BoxView>
-
             </Grid>
 
-            <!-- ================================================= -->
             <!-- L3 -->
-            <!-- ================================================= -->
-
             <Button
                 x:Name="L3Button"
                 AutomationId="L3Button"
@@ -122,10 +96,7 @@
                 AbsoluteLayout.LayoutBounds="0.13,0.88,55,35"
                 AbsoluteLayout.LayoutFlags="PositionProportional" />
 
-            <!-- ================================================= -->
             <!-- D-Pad -->
-            <!-- ================================================= -->
-
             <Grid
                 x:Name="DPad"
                 AutomationId="DPad"
@@ -133,7 +104,6 @@
                 HeightRequest="130"
                 AbsoluteLayout.LayoutBounds="0.30,0.62,190,190"
                 AbsoluteLayout.LayoutFlags="PositionProportional">
-
                 <Button
                     x:Name="DPadUpButton"
                     Text="▲"
@@ -144,7 +114,6 @@
                     VerticalOptions="Start"
                     Pressed="DPadUp_Pressed"
                     Released="DPadUp_Released" />
-
                 <Button
                     x:Name="DPadDownButton"
                     Text="▼"
@@ -155,7 +124,6 @@
                     VerticalOptions="End"
                     Pressed="DPadDown_Pressed"
                     Released="DPadDown_Released" />
-
                 <Button
                     x:Name="DPadLeftButton"
                     Text="◀"
@@ -166,7 +134,6 @@
                     VerticalOptions="Center"
                     Pressed="DPadLeft_Pressed"
                     Released="DPadLeft_Released" />
-
                 <Button
                     x:Name="DPadRightButton"
                     Text="▶"
@@ -177,13 +144,9 @@
                     VerticalOptions="Center"
                     Pressed="DPadRight_Pressed"
                     Released="DPadRight_Released" />
-
             </Grid>
 
-            <!-- ================================================= -->
             <!-- Back -->
-            <!-- ================================================= -->
-
             <Button
                 x:Name="BackButton"
                 AutomationId="BackButton"
@@ -196,10 +159,7 @@
                 AbsoluteLayout.LayoutBounds="0.46,0.15,55,32"
                 AbsoluteLayout.LayoutFlags="PositionProportional" />
 
-            <!-- ================================================= -->
             <!-- Start -->
-            <!-- ================================================= -->
-
             <Button
                 x:Name="StartButton"
                 AutomationId="StartButton"
@@ -212,10 +172,7 @@
                 AbsoluteLayout.LayoutBounds="0.54,0.15,55,32"
                 AbsoluteLayout.LayoutFlags="PositionProportional" />
 
-            <!-- ================================================= -->
             <!-- 右摇杆 -->
-            <!-- ================================================= -->
-
             <Grid
                 x:Name="RightJoystick"
                 AutomationId="RightJoystick"
@@ -223,20 +180,16 @@
                 HeightRequest="190"
                 AbsoluteLayout.LayoutBounds="0.63,0.72,190,190"
                 AbsoluteLayout.LayoutFlags="PositionProportional">
-
                 <Border
                     WidthRequest="160"
                     HeightRequest="160"
                     StrokeThickness="3"
                     HorizontalOptions="Center"
                     VerticalOptions="Center">
-
                     <Border.StrokeShape>
                         <RoundRectangle CornerRadius="80" />
                     </Border.StrokeShape>
-
                 </Border>
-
                 <Ellipse
                     x:Name="RightJoystickKnob"
                     WidthRequest="55"
@@ -244,23 +197,14 @@
                     BackgroundColor="Gray"
                     HorizontalOptions="Center"
                     VerticalOptions="Center" />
-
-                <BoxView
-                    BackgroundColor="Transparent">
-
+                <BoxView BackgroundColor="Transparent">
                     <BoxView.GestureRecognizers>
-                        <PanGestureRecognizer
-                            PanUpdated="RightJoystick_PanUpdated" />
+                        <PanGestureRecognizer PanUpdated="RightJoystick_PanUpdated" />
                     </BoxView.GestureRecognizers>
-
                 </BoxView>
-
             </Grid>
 
-            <!-- ================================================= -->
             <!-- R3 -->
-            <!-- ================================================= -->
-
             <Button
                 x:Name="R3Button"
                 AutomationId="R3Button"
@@ -273,14 +217,7 @@
                 AbsoluteLayout.LayoutBounds="0.63,0.94,55,35"
                 AbsoluteLayout.LayoutFlags="PositionProportional" />
 
-            <!-- ================================================= -->
-            <!-- ABXY
-                 X 上
-                 B 下
-                 Y 左
-                 A 右
-            ================================================= -->
-
+            <!-- ABXY：X 上，B 下，Y 左，A 右 -->
             <Grid
                 x:Name="ABXY"
                 AutomationId="ABXY"
@@ -288,7 +225,6 @@
                 HeightRequest="190"
                 AbsoluteLayout.LayoutBounds="0.84,0.57,190,190"
                 AbsoluteLayout.LayoutFlags="PositionProportional">
-
                 <Button
                     x:Name="XButton"
                     Text="X"
@@ -299,7 +235,6 @@
                     VerticalOptions="Start"
                     Pressed="XButton_Pressed"
                     Released="XButton_Released" />
-
                 <Button
                     x:Name="BButton"
                     Text="B"
@@ -310,7 +245,6 @@
                     VerticalOptions="End"
                     Pressed="BButton_Pressed"
                     Released="BButton_Released" />
-
                 <Button
                     x:Name="YButton"
                     Text="Y"
@@ -321,7 +255,6 @@
                     VerticalOptions="Center"
                     Pressed="YButton_Pressed"
                     Released="YButton_Released" />
-
                 <Button
                     x:Name="AButton"
                     Text="A"
@@ -332,13 +265,9 @@
                     VerticalOptions="Center"
                     Pressed="AButton_Pressed"
                     Released="AButton_Released" />
-
             </Grid>
 
-            <!-- ================================================= -->
             <!-- RT -->
-            <!-- ================================================= -->
-
             <Button
                 x:Name="RTButton"
                 AutomationId="RTButton"
@@ -351,10 +280,7 @@
                 AbsoluteLayout.LayoutBounds="0.92,0.08,70,45"
                 AbsoluteLayout.LayoutFlags="PositionProportional" />
 
-            <!-- ================================================= -->
             <!-- RB -->
-            <!-- ================================================= -->
-
             <Button
                 x:Name="RBButton"
                 AutomationId="RBButton"
@@ -367,10 +293,7 @@
                 AbsoluteLayout.LayoutBounds="0.92,0.19,70,45"
                 AbsoluteLayout.LayoutFlags="PositionProportional" />
 
-            <!-- ================================================= -->
             <!-- 编辑模式拖动层 -->
-            <!-- ================================================= -->
-
             <Grid
                 x:Name="EditDragLayer"
                 BackgroundColor="Transparent"
@@ -379,29 +302,16 @@
                 ZIndex="999"
                 AbsoluteLayout.LayoutBounds="0,0,1,1"
                 AbsoluteLayout.LayoutFlags="All" />
-
         </AbsoluteLayout>
 
-
-        <!-- ===================================================== -->
         <!-- 顶部 UI -->
-        <!--
-             ZIndex 比 EditDragLayer 高，
-             所以编辑按钮永远可以点击。
-        -->
-        <!-- ===================================================== -->
-
         <VerticalStackLayout
             ZIndex="1000"
             InputTransparent="False"
             HorizontalOptions="Fill"
-            VerticalOptions="Start"
-            >
+            VerticalOptions="Start">
 
-            <!-- ================================================= -->
             <!-- 状态 -->
-            <!-- ================================================= -->
-
             <Label
                 x:Name="StatusLabel"
                 Text="手柄未连接"
@@ -410,42 +320,30 @@
                 VerticalOptions="Center"
                 Margin="0,0,0,5" />
 
-            <!-- ================================================= -->
             <!-- 编辑按钮 -->
-            <!-- ================================================= -->
-
             <HorizontalStackLayout
                 HorizontalOptions="Center"
                 Spacing="8">
-
                 <Button
                     x:Name="EditLayoutButton"
                     Text="编辑布局"
                     Clicked="EditLayoutButton_Clicked" />
-
                 <Button
                     x:Name="SwapABXYButton"
                     Text="交换 ABXY"
                     Clicked="SwapABXYButton_Clicked"
-                    IsVisible="False"
-                />      
-
+                    IsVisible="False" />
                 <Button
                     x:Name="ResetLayoutButton"
                     Text="恢复默认"
                     IsVisible="False"
                     Clicked="ResetLayoutButton_Clicked" />
-
                 <Button
                     x:Name="FinishEditButton"
                     Text="完成"
                     IsVisible="False"
                     Clicked="FinishEditButton_Clicked" />
-
             </HorizontalStackLayout>
-
         </VerticalStackLayout>
-
     </Grid>
-
 </ContentPage>
