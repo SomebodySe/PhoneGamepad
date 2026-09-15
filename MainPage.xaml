@@ -424,10 +424,11 @@
                     Clicked="EditLayoutButton_Clicked" />
 
                 <Button
-                    x:Name="SaveLayoutButton"
-                    Text="保存布局"
+                    x:Name="SwapABXYButton"
+                    Text="交换 ABXY"
+                    Clicked="SwapABXYButton_Clicked"
                     IsVisible="False"
-                    Clicked="SaveLayoutButton_Clicked" />
+                />      
 
                 <Button
                     x:Name="ResetLayoutButton"

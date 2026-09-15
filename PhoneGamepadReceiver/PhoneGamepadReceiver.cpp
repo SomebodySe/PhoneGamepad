@@ -18,6 +18,7 @@ namespace fs = std::filesystem;
 
 constexpr int TCP_PORT = 5066;
 constexpr int RETRY_SECONDS = 2;
+constexpr bool DEBUG_OUTPUT = false;
 
 // [-1,1] 转 XInput 摇杆范围
 SHORT StickToXInput(float value)
@@ -203,7 +204,7 @@ bool CreateVirtualController(PVIGEM_CLIENT& client, PVIGEM_TARGET& controller)
 
     if (!VIGEM_SUCCESS(error))
     {
-        std::cout << "[ViGEm] 添加虚拟手柄失败，错误码: " << error << "\n";
+        std::cout << "[ViGEm] 添加虚拟手柄失败: " << error << "\n";
         vigem_target_free(controller);
         vigem_disconnect(client);
         vigem_free(client);
@@ -234,6 +235,70 @@ void DestroyVirtualController(PVIGEM_CLIENT& client, PVIGEM_TARGET& controller)
         vigem_free(client);
         client = nullptr;
     }
+}
+
+// 在固定的控制台行刷新调试信息
+void PrintDebugLine(
+    bool A, bool B, bool X, bool Y,
+    bool LB, bool RB,
+    bool LT, bool RT,
+    bool L3, bool R3,
+    bool DPadUp, bool DPadDown,
+    bool DPadLeft, bool DPadRight,
+    float LX, float LY,
+    float RX, float RY)
+{
+    static bool initialized = false;
+    static COORD debugPosition{};
+
+    HANDLE console = GetStdHandle(STD_OUTPUT_HANDLE);
+
+    if (!initialized)
+    {
+        CONSOLE_SCREEN_BUFFER_INFO info{};
+
+        if (GetConsoleScreenBufferInfo(console, &info))
+        {
+            debugPosition = info.dwCursorPosition;
+            initialized = true;
+        }
+    }
+
+    if (!initialized)
+        return;
+
+    COORD oldPosition{};
+
+    CONSOLE_SCREEN_BUFFER_INFO info{};
+    if (GetConsoleScreenBufferInfo(console, &info))
+        oldPosition = info.dwCursorPosition;
+
+    SetConsoleCursorPosition(console, debugPosition);
+
+    std::cout
+        << "A=" << (A ? 1 : 0)
+        << " B=" << (B ? 1 : 0)
+        << " X=" << (X ? 1 : 0)
+        << " Y=" << (Y ? 1 : 0)
+        << " | LB=" << (LB ? 1 : 0)
+        << " RB=" << (RB ? 1 : 0)
+        << " | LT=" << (LT ? 1 : 0)
+        << " RT=" << (RT ? 1 : 0)
+        << " | L3=" << (L3 ? 1 : 0)
+        << " R3=" << (R3 ? 1 : 0)
+        << " | DPad="
+        << (DPadUp ? "U" : "-")
+        << (DPadDown ? "D" : "-")
+        << (DPadLeft ? "L" : "-")
+        << (DPadRight ? "R" : "-")
+        << " | LX=" << LX
+        << " LY=" << LY
+        << " | RX=" << RX
+        << " RY=" << RY
+        << "                         "
+        << std::flush;
+
+    SetConsoleCursorPosition(console, oldPosition);
 }
 
 // 把 JSON 状态转换成 Xbox 报告
@@ -302,37 +367,25 @@ bool UpdateControllerFromJson(
     report.sThumbLY = StickToXInput(-LY);
     report.sThumbRX = StickToXInput(RX);
     report.sThumbRY = StickToXInput(-RY);
-
     // 每 5 帧显示一次调试信息
-    debugCounter++;
-
-    if (debugCounter >= 5)
+    if (DEBUG_OUTPUT)
     {
-        debugCounter = 0;
+        debugCounter++;
 
-        std::cout
-            << "\r"
-            << "A=" << (A ? 1 : 0)
-            << " B=" << (B ? 1 : 0)
-            << " X=" << (X ? 1 : 0)
-            << " Y=" << (Y ? 1 : 0)
-            << " | LB=" << (LB ? 1 : 0)
-            << " RB=" << (RB ? 1 : 0)
-            << " | LT=" << (LT ? 1 : 0)
-            << " RT=" << (RT ? 1 : 0)
-            << " | L3=" << (L3 ? 1 : 0)
-            << " R3=" << (R3 ? 1 : 0)
-            << " | DPad="
-            << (DPadUp ? "U" : "-")
-            << (DPadDown ? "D" : "-")
-            << (DPadLeft ? "L" : "-")
-            << (DPadRight ? "R" : "-")
-            << " | LX=" << LX
-            << " LY=" << LY
-            << " | RX=" << RX
-            << " RY=" << RY
-            << "                         "
-            << std::flush;
+        if (debugCounter >= 5)
+        {
+            debugCounter = 0;
+
+            PrintDebugLine(
+                A, B, X, Y,
+                LB, RB,
+                LT, RT,
+                L3, R3,
+                DPadUp, DPadDown,
+                DPadLeft, DPadRight,
+                LX, LY,
+                RX, RY);
+        }
     }
 
     return true;
@@ -341,7 +394,6 @@ bool UpdateControllerFromJson(
 int main()
 {
     std::cout << "PhoneGamepad Receiver\n";
-    std::cout << "常驻模式：手机 / ADB / ViGEm 断开后都会自动重试。\n\n";
 
     // 初始化 Winsock
     WSADATA wsaData{};
@@ -416,7 +468,7 @@ int main()
             continue;
         }
 
-        std::cout << "[Socket] Connected to phone!\n";
+        std::cout << "[Socket] Connected to phone!\n\n";
 
         XUSB_REPORT report{};
         std::string receiveBuffer;

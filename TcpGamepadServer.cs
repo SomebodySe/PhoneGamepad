@@ -14,14 +14,6 @@ public class TcpGamepadServer
     {
         try
         {
-            await MainThread.InvokeOnMainThreadAsync(async () =>
-            {
-                await Application.Current!.MainPage!.DisplayAlert(
-                    "TCP TEST",
-                    "1. StartAsync 已运行",
-                    "OK");
-            });
-
             listener = new TcpListener(
                 IPAddress.Loopback,
                 port);
@@ -32,7 +24,7 @@ public class TcpGamepadServer
             {
                 await Application.Current!.MainPage!.DisplayAlert(
                     "TCP TEST",
-                    "2. listener.Start() 成功\n正在等待 Windows 连接",
+                    "正在等待 Windows 连接",
                     "OK");
             });
 
@@ -45,7 +37,7 @@ public class TcpGamepadServer
                 {
                     await Application.Current!.MainPage!.DisplayAlert(
                         "TCP TEST",
-                        "3. AcceptTcpClientAsync 成功！",
+                        "连接成功",
                         "OK");
                 });
 

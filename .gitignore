@@ -1,7 +1,9 @@
 # Visual Studio
 .vs/
 obj/
+bin/
 
 # PhoneGamepadReceiver
 PhoneGamepadReceiver/.vs/
 PhoneGamepadReceiver/PhoneGam.cf15ec6b/
+PhoneGamepadReceiver/x64
