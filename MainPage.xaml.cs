@@ -1,4 +1,5 @@
 ﻿
+using Microsoft.Maui.Layouts;
 using System.Text.Json;
 
 namespace PhoneGamepad;
@@ -13,6 +14,9 @@ public partial class MainPage : ContentPage
     // 编辑模式
     private bool isEditMode = false;
     private bool swapABXY = false;
+    private const string SwapABXYKey = "PhoneGamepad_SwapABXY";
+    private View? selectedView;
+    private const string ScalePrefix = "PhoneGamepad_Scale_";
 
     // 摇杆
     private const double JoystickRadius = 60.0;
@@ -20,6 +24,23 @@ public partial class MainPage : ContentPage
 
     // 布局保存
     private const string PositionPrefix = "PhoneGamepad_Position_";
+
+    private static readonly Dictionary<string, (double X, double Y)> DefaultOffsets = new()
+    {
+        ["LTButton"] = (0.05, -0.03),
+        ["LBButton"] = (0, 0.03),
+        ["LeftJoystick"] = (0, 0),
+        ["L3Button"] = (0, 0),
+        ["DPad"] = (0, 0.2),
+        ["BackButton"] = (-0.05, 0.1),
+        ["HomeButton"] = (0, 0.1),
+        ["StartButton"] = (0.05, 0.1),
+        ["RightJoystick"] = (0.05, 0.05),
+        ["R3Button"] = (0, 0.05),
+        ["ABXY"] = (0.1, 0.1),
+        ["RTButton"] = (-0.05, -0.03),
+        ["RBButton"] = (0, 0.03)
+    };
 
     // 进入编辑模式之前的位置
     private readonly Dictionary<View, Point> originalPositions = new();
@@ -35,6 +56,12 @@ public partial class MainPage : ContentPage
     public MainPage()
     {
         InitializeComponent();
+        swapABXY = Preferences.Default.Get(SwapABXYKey, false);
+
+        AButton.Text = swapABXY ? "B" : "A";
+        BButton.Text = swapABXY ? "A" : "B";
+        XButton.Text = swapABXY ? "Y" : "X";
+        YButton.Text = swapABXY ? "X" : "Y";
         LoadSavedLayout();
         UpdateStatus();
         _ = tcpServer.StartAsync(5066);
@@ -70,6 +97,7 @@ public partial class MainPage : ContentPage
         yield return L3Button;
         yield return DPad;
         yield return BackButton;
+        yield return HomeButton;
         yield return StartButton;
         yield return RightJoystick;
         yield return R3Button;
@@ -111,6 +139,8 @@ public partial class MainPage : ContentPage
             pressed.Add("R3");
         if (gamepad.Start)
             pressed.Add("Start");
+        if (gamepad.Home)
+            pressed.Add("Home");
         if (gamepad.Back)
             pressed.Add("Back");
         if (gamepad.DPadUp)
@@ -125,8 +155,6 @@ public partial class MainPage : ContentPage
         string buttons = pressed.Count == 0 ? "无按键" : string.Join(" ", pressed);
 
         StatusLabel.Text =
-            $"A:{gamepad.A} B:{gamepad.B} " +
-            $"X:{gamepad.X} Y:{gamepad.Y}  " +
             $"LX:{gamepad.LX:F2} LY:{gamepad.LY:F2}  " +
             $"RX:{gamepad.RX:F2} RY:{gamepad.RY:F2}  " +
             buttons;
@@ -150,6 +178,7 @@ public partial class MainPage : ContentPage
         gamepad.LT = false;
         gamepad.RT = false;
         gamepad.Start = false;
+        gamepad.Home = false;
         gamepad.Back = false;
         gamepad.DPadUp = false;
         gamepad.DPadDown = false;
@@ -399,6 +428,23 @@ public partial class MainPage : ContentPage
         UpdateStatus();
     }
 
+    // Home
+    private void HomeButton_Pressed(object sender, EventArgs e)
+    {
+        if (isEditMode)
+            return;
+        gamepad.Home = true;
+        UpdateStatus();
+    }
+
+    private void HomeButton_Released(object sender, EventArgs e)
+    {
+        if (isEditMode)
+            return;
+        gamepad.Home = false;
+        UpdateStatus();
+    }
+
     // Back
     private void BackButton_Pressed(object sender, EventArgs e)
     {
@@ -582,6 +628,7 @@ public partial class MainPage : ContentPage
 
             Preferences.Default.Set(key + "_X", view.TranslationX);
             Preferences.Default.Set(key + "_Y", view.TranslationY);
+            Preferences.Default.Set(key + "_Scale", view.Scale);
         }
     }
 
@@ -598,10 +645,15 @@ public partial class MainPage : ContentPage
             string key = PositionPrefix + view.AutomationId;
 
             if (Preferences.Default.ContainsKey(key + "_X") &&
-                Preferences.Default.ContainsKey(key + "_Y"))
+             Preferences.Default.ContainsKey(key + "_Y"))
             {
                 view.TranslationX = Preferences.Default.Get(key + "_X", 0.0);
                 view.TranslationY = Preferences.Default.Get(key + "_Y", 0.0);
+            }
+
+            if (Preferences.Default.ContainsKey(key + "_Scale"))
+            {
+                view.Scale = Preferences.Default.Get(key + "_Scale", 1.0);
             }
         }
     }
@@ -628,6 +680,58 @@ public partial class MainPage : ContentPage
         }
 
         return null;
+    }
+    private void SelectView(View? view)
+    {
+        selectedView = view;
+
+        if (view == null)
+        {
+            SelectionBorder.IsVisible = false;
+            SizeEditor.IsVisible = false;
+            return;
+        }
+
+        SelectionBorder.IsVisible = true;
+        SizeEditor.IsVisible = true;
+        SizeSlider.Value = view.Scale;
+        SizeLabel.Text = $"大小 {view.Scale * 100:F0}%";
+        UpdateSelectionBorder();
+    }
+
+    private void UpdateSelectionBorder()
+    {
+        if (selectedView == null)
+            return;
+
+        Rect bounds = selectedView.Bounds;
+
+        AbsoluteLayout.SetLayoutFlags(
+            SelectionBorder,
+            AbsoluteLayoutFlags.None);
+
+        AbsoluteLayout.SetLayoutBounds(
+            SelectionBorder,
+            new Rect(
+                bounds.X,
+                bounds.Y,
+                bounds.Width,
+                bounds.Height));
+
+        SelectionBorder.TranslationX = selectedView.TranslationX;
+        SelectionBorder.TranslationY = selectedView.TranslationY;
+        SelectionBorder.Scale = selectedView.Scale;
+        SelectionBorder.IsVisible = true;
+    }
+
+    private void SizeSlider_ValueChanged(object sender, ValueChangedEventArgs e)
+    {
+        if (selectedView == null)
+            return;
+
+        selectedView.Scale = e.NewValue;
+        SizeLabel.Text = $"大小 {e.NewValue * 100:F0}%";
+        UpdateSelectionBorder();
     }
 
 #if ANDROID
@@ -699,6 +803,8 @@ public partial class MainPage : ContentPage
         if (target == null)
             return;
 
+        SelectView(target);
+
         draggingView = target;
         dragStartRawX = rawX;
         dragStartRawY = rawY;
@@ -728,8 +834,10 @@ public partial class MainPage : ContentPage
 
             float left = location[0];
             float top = location[1];
-            float right = left + nativeView.Width;
-            float bottom = top + nativeView.Height;
+            float width = nativeView.Width * (float)view.Scale;
+            float height = nativeView.Height * (float)view.Scale;
+            float right = left + width;
+            float bottom = top + height;
 
             if (rawX >= left && rawX <= right && rawY >= top && rawY <= bottom)
             {
@@ -755,12 +863,51 @@ public partial class MainPage : ContentPage
         double deltaX = (rawX - dragStartRawX) / density;
         double deltaY = (rawY - dragStartRawY) / density;
 #else
-        double deltaX = rawX - dragStartRawX;
-        double deltaY = rawY - dragStartRawY;
+    double deltaX = rawX - dragStartRawX;
+    double deltaY = rawY - dragStartRawY;
 #endif
 
-        draggingView.TranslationX = dragStartTranslationX + deltaX;
-        draggingView.TranslationY = dragStartTranslationY + deltaY;
+        double newX = dragStartTranslationX + deltaX;
+        double newY = dragStartTranslationY + deltaY;
+
+        // 编辑控制区域的位置
+        Rect editBounds = EditControlArea.Bounds;
+
+        // 当前控件原始位置和尺寸
+        Rect viewBounds = draggingView.Bounds;
+
+        // 考虑 Scale 后的实际尺寸
+        double width = viewBounds.Width * draggingView.Scale;
+        double height = viewBounds.Height * draggingView.Scale;
+
+        // 计算控件移动后的区域
+        double left = viewBounds.X + newX;
+        double top = viewBounds.Y + newY;
+        double right = left + width;
+        double bottom = top + height;
+
+        // 编辑控制区域的上下左右
+        double editLeft = EditControlArea.X;
+        double editTop = EditControlArea.Y;
+        double editRight = editLeft + editBounds.Width;
+        double editBottom = editTop + editBounds.Height;
+
+        // 如果控件进入编辑控制区域，限制它的位置
+        if (right > editLeft &&
+            left < editRight &&
+            bottom > editTop &&
+            top < editBottom)
+        {
+            if (draggingView.TranslationY < newY)
+                newY = editTop - viewBounds.Y - height;
+            else if (draggingView.TranslationY > newY)
+                newY = editBottom - viewBounds.Y;
+        }
+
+        draggingView.TranslationX = newX;
+        draggingView.TranslationY = newY;
+
+        UpdateSelectionBorder();
     }
 
     // 结束拖动
@@ -786,6 +933,7 @@ public partial class MainPage : ContentPage
         YButton.Text = swapABXY ? "X" : "Y";
 
         SwapABXYButton.Text = swapABXY ? "交换 ABXY" : "交换 ABXY";
+        Preferences.Default.Set(SwapABXYKey, swapABXY);
 
         ClearGamepadState();
     }
@@ -799,6 +947,7 @@ public partial class MainPage : ContentPage
 
         EditDragLayer.IsVisible = true;
         EditDragLayer.InputTransparent = false;
+        selectedView = null;
 
 #if ANDROID
         AttachEditDragLayer();
@@ -818,15 +967,41 @@ public partial class MainPage : ContentPage
         ResetToFactoryLayout();
     }
 
+    private void ApplyDefaultOffset(View view)
+    {
+        string name = view.AutomationId ?? view.GetType().Name;
+
+        if (!DefaultOffsets.TryGetValue(name, out var offset))
+        {
+            view.TranslationX = 0;
+            view.TranslationY = 0;
+            return;
+        }
+
+        double width = GamepadLayout.Width;
+        double height = GamepadLayout.Height;
+
+        if (width <= 0 || height <= 0)
+        {
+            view.TranslationX = 0;
+            view.TranslationY = 0;
+            return;
+        }
+
+        view.TranslationX = offset.X * width;
+        view.TranslationY = offset.Y * height;
+    }
+
     // 恢复默认布局
     private void ResetToFactoryLayout()
     {
         foreach (View view in GetEditableViews())
         {
-            view.TranslationX = 0;
-            view.TranslationY = 0;
+            ApplyDefaultOffset(view);
+            view.Scale = 1.0;
         }
 
+        SelectView(null);
         ResetJoystickVisuals();
         ClearGamepadState();
         UpdateStatus();
@@ -868,6 +1043,7 @@ public partial class MainPage : ContentPage
         draggingView = null;
         EditDragLayer.IsVisible = false;
         EditDragLayer.InputTransparent = true;
+        SelectView(null);
         isEditMode = false;
 
         // 自动保存布局

@@ -140,6 +140,7 @@ public class TcpGamepadServer
             RT = MainPage.CurrentGamepad.RT,
 
             Start = MainPage.CurrentGamepad.Start,
+            Home = MainPage.CurrentGamepad.Home,
             Back = MainPage.CurrentGamepad.Back,
 
             DPadUp =

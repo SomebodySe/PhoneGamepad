@@ -5,13 +5,12 @@
     x:Class="PhoneGamepad.MainPage"
     NavigationPage.HasNavigationBar="False">
 
-    <!-- ContentPage 只有这一个根 Content -->
     <Grid Padding="10">
-        <!-- 手柄区域：占满整个页面 -->
+        <!-- 手柄区域 -->
         <AbsoluteLayout x:Name="GamepadLayout"
                         InputTransparent="False">
 
-            <!-- TouchBackground：负责接收空白区域的第一根手指 -->
+            <!-- 空白触摸区域 -->
             <Button
                 x:Name="TouchBackground"
                 Text=""
@@ -58,6 +57,7 @@
                 HeightRequest="190"
                 AbsoluteLayout.LayoutBounds="0.13,0.62,190,190"
                 AbsoluteLayout.LayoutFlags="PositionProportional">
+
                 <Border
                     x:Name="JoystickBase"
                     WidthRequest="160"
@@ -69,6 +69,7 @@
                         <RoundRectangle CornerRadius="80" />
                     </Border.StrokeShape>
                 </Border>
+
                 <Ellipse
                     x:Name="JoystickKnob"
                     WidthRequest="55"
@@ -76,6 +77,7 @@
                     BackgroundColor="Gray"
                     HorizontalOptions="Center"
                     VerticalOptions="Center" />
+
                 <BoxView BackgroundColor="Transparent">
                     <BoxView.GestureRecognizers>
                         <PanGestureRecognizer PanUpdated="Joystick_PanUpdated" />
@@ -104,6 +106,7 @@
                 HeightRequest="130"
                 AbsoluteLayout.LayoutBounds="0.30,0.62,190,190"
                 AbsoluteLayout.LayoutFlags="PositionProportional">
+
                 <Button
                     x:Name="DPadUpButton"
                     Text="▲"
@@ -114,6 +117,7 @@
                     VerticalOptions="Start"
                     Pressed="DPadUp_Pressed"
                     Released="DPadUp_Released" />
+
                 <Button
                     x:Name="DPadDownButton"
                     Text="▼"
@@ -124,6 +128,7 @@
                     VerticalOptions="End"
                     Pressed="DPadDown_Pressed"
                     Released="DPadDown_Released" />
+
                 <Button
                     x:Name="DPadLeftButton"
                     Text="◀"
@@ -134,6 +139,7 @@
                     VerticalOptions="Center"
                     Pressed="DPadLeft_Pressed"
                     Released="DPadLeft_Released" />
+
                 <Button
                     x:Name="DPadRightButton"
                     Text="▶"
@@ -150,23 +156,35 @@
             <Button
                 x:Name="BackButton"
                 AutomationId="BackButton"
-                Text="Back"
-                FontSize="11"
-                WidthRequest="55"
-                HeightRequest="32"
+                Text="-"
+                FontSize="24"
+                WidthRequest="40"
+                HeightRequest="40"
                 Pressed="BackButton_Pressed"
                 Released="BackButton_Released"
                 AbsoluteLayout.LayoutBounds="0.46,0.15,55,32"
+                AbsoluteLayout.LayoutFlags="PositionProportional" />
+
+            <Button
+                x:Name="HomeButton"
+                AutomationId="HomeButton"
+                Text="HOME"
+                FontSize="10"
+                WidthRequest="60"
+                HeightRequest="40"
+                Pressed="HomeButton_Pressed"
+                Released="HomeButton_Released"
+                AbsoluteLayout.LayoutBounds="0.50,0.15,55,32"
                 AbsoluteLayout.LayoutFlags="PositionProportional" />
 
             <!-- Start -->
             <Button
                 x:Name="StartButton"
                 AutomationId="StartButton"
-                Text="Start"
-                FontSize="11"
-                WidthRequest="55"
-                HeightRequest="32"
+                Text="+"
+                FontSize="20"
+                WidthRequest="40"
+                HeightRequest="40"
                 Pressed="StartButton_Pressed"
                 Released="StartButton_Released"
                 AbsoluteLayout.LayoutBounds="0.54,0.15,55,32"
@@ -180,6 +198,7 @@
                 HeightRequest="190"
                 AbsoluteLayout.LayoutBounds="0.63,0.72,190,190"
                 AbsoluteLayout.LayoutFlags="PositionProportional">
+
                 <Border
                     WidthRequest="160"
                     HeightRequest="160"
@@ -190,6 +209,7 @@
                         <RoundRectangle CornerRadius="80" />
                     </Border.StrokeShape>
                 </Border>
+
                 <Ellipse
                     x:Name="RightJoystickKnob"
                     WidthRequest="55"
@@ -197,6 +217,7 @@
                     BackgroundColor="Gray"
                     HorizontalOptions="Center"
                     VerticalOptions="Center" />
+
                 <BoxView BackgroundColor="Transparent">
                     <BoxView.GestureRecognizers>
                         <PanGestureRecognizer PanUpdated="RightJoystick_PanUpdated" />
@@ -217,7 +238,7 @@
                 AbsoluteLayout.LayoutBounds="0.63,0.94,55,35"
                 AbsoluteLayout.LayoutFlags="PositionProportional" />
 
-            <!-- ABXY：X 上，B 下，Y 左，A 右 -->
+            <!-- ABXY -->
             <Grid
                 x:Name="ABXY"
                 AutomationId="ABXY"
@@ -225,6 +246,7 @@
                 HeightRequest="190"
                 AbsoluteLayout.LayoutBounds="0.84,0.57,190,190"
                 AbsoluteLayout.LayoutFlags="PositionProportional">
+
                 <Button
                     x:Name="XButton"
                     Text="X"
@@ -235,6 +257,7 @@
                     VerticalOptions="Start"
                     Pressed="XButton_Pressed"
                     Released="XButton_Released" />
+
                 <Button
                     x:Name="BButton"
                     Text="B"
@@ -245,6 +268,7 @@
                     VerticalOptions="End"
                     Pressed="BButton_Pressed"
                     Released="BButton_Released" />
+
                 <Button
                     x:Name="YButton"
                     Text="Y"
@@ -255,6 +279,7 @@
                     VerticalOptions="Center"
                     Pressed="YButton_Pressed"
                     Released="YButton_Released" />
+
                 <Button
                     x:Name="AButton"
                     Text="A"
@@ -293,6 +318,20 @@
                 AbsoluteLayout.LayoutBounds="0.92,0.19,70,45"
                 AbsoluteLayout.LayoutFlags="PositionProportional" />
 
+            <!-- 当前选中控件的高亮框 -->
+            <Border
+                x:Name="SelectionBorder"
+                IsVisible="False"
+                Stroke="Lime"
+                StrokeThickness="3"
+                BackgroundColor="Transparent"
+                InputTransparent="True"
+                ZIndex="998">
+                <Border.StrokeShape>
+                    <RoundRectangle CornerRadius="8" />
+                </Border.StrokeShape>
+            </Border>
+
             <!-- 编辑模式拖动层 -->
             <Grid
                 x:Name="EditDragLayer"
@@ -321,29 +360,79 @@
                 Margin="0,0,0,5" />
 
             <!-- 编辑按钮 -->
-            <HorizontalStackLayout
+            <!-- 编辑控制区域 -->
+            <VerticalStackLayout
+                x:Name="EditControlArea"
                 HorizontalOptions="Center"
-                Spacing="8">
-                <Button
-                    x:Name="EditLayoutButton"
-                    Text="编辑布局"
-                    Clicked="EditLayoutButton_Clicked" />
-                <Button
-                    x:Name="SwapABXYButton"
-                    Text="交换 ABXY"
-                    Clicked="SwapABXYButton_Clicked"
-                    IsVisible="False" />
-                <Button
-                    x:Name="ResetLayoutButton"
-                    Text="恢复默认"
+                Spacing="2">
+
+                <!-- 编辑按钮 -->
+                <HorizontalStackLayout
+                    HorizontalOptions="Center"
+                    Spacing="8">    
+
+                    <Button
+                        x:Name="EditLayoutButton"
+                        Text="编辑布局"
+                        FontSize="10"
+                        Padding="4,2"
+                        HeightRequest="28"
+                        Clicked="EditLayoutButton_Clicked" />
+
+                    <Button
+                        x:Name="SwapABXYButton"
+                        Text="交换 ABXY"
+                        FontSize="10"
+                        Padding="4,2"
+                        HeightRequest="28"
+                        Clicked="SwapABXYButton_Clicked"
+                        IsVisible="False" />
+
+                    <Button
+                        x:Name="ResetLayoutButton"
+                        Text="恢复默认"
+                        FontSize="10"
+                        Padding="4,2"
+                        HeightRequest="28"
+                        Clicked="ResetLayoutButton_Clicked"
+                        IsVisible="False" />
+
+                    <Button
+                        x:Name="FinishEditButton"
+                        Text="完成"
+                        FontSize="10"
+                        Padding="4,2"
+                        HeightRequest="28"
+                        Clicked="FinishEditButton_Clicked"
+                        IsVisible="False" />
+                </HorizontalStackLayout>
+
+                <!-- 按键大小 -->
+                <HorizontalStackLayout
+                    x:Name="SizeEditor"
                     IsVisible="False"
-                    Clicked="ResetLayoutButton_Clicked" />
-                <Button
-                    x:Name="FinishEditButton"
-                    Text="完成"
-                    IsVisible="False"
-                    Clicked="FinishEditButton_Clicked" />
-            </HorizontalStackLayout>
+                    HorizontalOptions="Center"
+                    VerticalOptions="Center"
+                    Spacing="8"
+                    Margin="0,4,0,0">
+
+                    <Label
+                        x:Name="SizeLabel"
+                        Text="大小：100%"
+                        FontSize="14"
+                        VerticalOptions="Center" />
+
+                    <Slider
+                        x:Name="SizeSlider"
+                        Minimum="0.5"
+                        Maximum="1.5"
+                        Value="1"
+                        WidthRequest="180"
+                        VerticalOptions="Center"
+                        ValueChanged="SizeSlider_ValueChanged" />
+                </HorizontalStackLayout>
+
+            </VerticalStackLayout>
         </VerticalStackLayout>
     </Grid>
 </ContentPage>

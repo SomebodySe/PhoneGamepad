@@ -29,6 +29,7 @@ public class GamepadState
 
     // Start / Back
     public bool Start { get; set; }
+    public bool Home { get; set; }
     public bool Back { get; set; }
 
     // 十字方向键

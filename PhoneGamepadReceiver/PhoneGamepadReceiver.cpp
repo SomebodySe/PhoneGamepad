@@ -316,6 +316,7 @@ bool UpdateControllerFromJson(
     bool RB = data.value("RB", false);
 
     bool Start = data.value("Start", false);
+    bool Home = data.value("Home", false);
     bool Back = data.value("Back", false);
 
     bool DPadUp = data.value("DPadUp", false);
@@ -346,6 +347,7 @@ bool UpdateControllerFromJson(
 
     // Start / Back
     SetButton(report.wButtons, Start, XUSB_GAMEPAD_START);
+    SetButton(report.wButtons, Home, XUSB_GAMEPAD_GUIDE);
     SetButton(report.wButtons, Back, XUSB_GAMEPAD_BACK);
 
     // D-Pad
