@@ -19,6 +19,8 @@
 		<SingleProject>true</SingleProject>
 		<ImplicitUsings>enable</ImplicitUsings>
 		<Nullable>enable</Nullable>
+		<AndroidFastDeployment>false</AndroidFastDeployment>
+		<EmbedAssembliesIntoApk>true</EmbedAssembliesIntoApk>
 
 		<!-- Display name -->
 		<ApplicationTitle>PhoneGamepad</ApplicationTitle>

@@ -62,7 +62,6 @@ public partial class MainPage : ContentPage
         BButton.Text = swapABXY ? "A" : "B";
         XButton.Text = swapABXY ? "Y" : "X";
         YButton.Text = swapABXY ? "X" : "Y";
-        LoadSavedLayout();
         UpdateStatus();
         _ = tcpServer.StartAsync(5066);
     }
@@ -71,9 +70,15 @@ public partial class MainPage : ContentPage
     protected override void OnAppearing()
     {
         base.OnAppearing();
-        LoadSavedLayout();
+
+        MainThread.BeginInvokeOnMainThread(async () =>
+        {
+            await Task.Delay(100);
+            LoadSavedLayout();
+        });
+
 #if ANDROID
-        EnableAndroidMultiTouch();
+    EnableAndroidMultiTouch();
 #endif
     }
 
@@ -617,43 +622,109 @@ public partial class MainPage : ContentPage
     // 保存当前布局
     private void SaveCurrentLayout()
     {
-        foreach (View view in GetEditableViews())
+        try
         {
-            if (string.IsNullOrEmpty(view.AutomationId))
+            foreach (View view in GetEditableViews())
             {
-                continue;
+                if (string.IsNullOrEmpty(view.AutomationId))
+                    continue;
+
+                string key = PositionPrefix + view.AutomationId;
+
+                Preferences.Default.Set(
+                    key + "_X",
+                    view.TranslationX);
+
+                Preferences.Default.Set(
+                    key + "_Y",
+                    view.TranslationY);
+
+                Preferences.Default.Set(
+                    key + "_Scale",
+                    view.Scale);
             }
-
-            string key = PositionPrefix + view.AutomationId;
-
-            Preferences.Default.Set(key + "_X", view.TranslationX);
-            Preferences.Default.Set(key + "_Y", view.TranslationY);
-            Preferences.Default.Set(key + "_Scale", view.Scale);
+        }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine(
+                $"Save layout error: {ex}");
         }
     }
 
     // 加载保存的布局
     private void LoadSavedLayout()
     {
-        foreach (View view in GetEditableViews())
+        try
         {
-            if (string.IsNullOrEmpty(view.AutomationId))
+            foreach (View view in GetEditableViews())
             {
-                continue;
+                if (string.IsNullOrEmpty(view.AutomationId))
+                    continue;
+
+                string key = PositionPrefix + view.AutomationId;
+
+                bool hasSavedPosition =
+                    Preferences.Default.ContainsKey(key + "_X") &&
+                    Preferences.Default.ContainsKey(key + "_Y");
+
+                if (hasSavedPosition)
+                {
+                    try
+                    {
+                        view.TranslationX =
+                            Preferences.Default.Get(key + "_X", 0.0);
+
+                        view.TranslationY =
+                            Preferences.Default.Get(key + "_Y", 0.0);
+
+                        if (Preferences.Default.ContainsKey(key + "_Scale"))
+                        {
+                            double scale =
+                                Preferences.Default.Get(key + "_Scale", 1.0);
+
+                            if (double.IsNaN(scale) ||
+                                double.IsInfinity(scale) ||
+                                scale < 0.5 ||
+                                scale > 1.5)
+                            {
+                                scale = 1.0;
+                            }
+
+                            view.Scale = scale;
+                        }
+                        else
+                        {
+                            view.Scale = 1.0;
+                        }
+                    }
+                    catch (Exception ex)
+                    {
+                        System.Diagnostics.Debug.WriteLine(
+                            $"读取 {view.AutomationId} 布局失败: {ex}");
+
+                        // 保存数据异常时直接使用默认布局
+                        ApplyDefaultOffset(view);
+                        view.Scale = 1.0;
+                    }
+                }
+                else
+                {
+                    // 没有保存过布局 → 使用初始默认位置
+                    ApplyDefaultOffset(view);
+                    view.Scale = 1.0;
+                }
             }
+        }
+        catch (Exception ex)
+        {
+            System.Diagnostics.Debug.WriteLine(
+                $"LoadSavedLayout error: {ex}");
 
-            string key = PositionPrefix + view.AutomationId;
-
-            if (Preferences.Default.ContainsKey(key + "_X") &&
-             Preferences.Default.ContainsKey(key + "_Y"))
+            // 如果整个读取过程出现异常，也恢复默认布局
+            foreach (View view in GetEditableViews())
             {
-                view.TranslationX = Preferences.Default.Get(key + "_X", 0.0);
-                view.TranslationY = Preferences.Default.Get(key + "_Y", 0.0);
-            }
-
-            if (Preferences.Default.ContainsKey(key + "_Scale"))
-            {
-                view.Scale = Preferences.Default.Get(key + "_Scale", 1.0);
+                ApplyDefaultOffset(view);
+                view.Scale = 1.0;
             }
         }
     }
